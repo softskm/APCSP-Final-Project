@@ -11,7 +11,7 @@ GREEN = (0, 255, 0 )
 BLUE = (0, 0, 255)
 
 # define window size
-WINDOW_SIZE = (400, 400)
+WINDOW_SIZE = (400, 400 )
 
 # create window
 screen = pygame.display.set_mode(WINDOW_SIZE)
