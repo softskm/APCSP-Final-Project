@@ -1,70 +1,88 @@
 import pygame
-import random
 
-# Initialize Pygame
+# initialize pygame
 pygame.init()
 
-# Set up the window
-WINDOW_SIZE = (500, 500)
+# define colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+# define window size
+WINDOW_SIZE = (400, 400)
+
+# create window
 screen = pygame.display.set_mode(WINDOW_SIZE)
-pygame.display.set_caption('Simple Game')
+pygame.display.set_caption("Avatar Maker")
 
-# Set up the clock
-clock = pygame.time.Clock()
+# define avatar options
+hair_options = [BLACK, RED, GREEN, BLUE]
+skin_options = [WHITE, (255, 224, 189), (220, 133, 83), (139, 69, 19)]
+eye_options = [BLUE, (139, 0, 0), (34, 139, 34), (255, 215, 0)]
 
-# Define the player and enemy
-player_size = 50
-player_pos = [WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] - player_size * 2]
-enemy_size = 50
-enemy_pos = [random.randint(0, WINDOW_SIZE[0] - enemy_size), 0]
-enemy_speed = 10
+# define selected options
+selected_hair = 0
+selected_skin = 0
+selected_eye = 0
 
-# Define the score font and initial score
-font = pygame.font.Font(None, 30)
-score = 0
+# define hair
+hair_rect = pygame.Rect(100, 100, 200, 50)
+hair_surface = pygame.Surface((200, 50))
 
-# Define the function to detect collisions
-def detect_collision(player_pos, enemy_pos):
-    p_x, p_y = player_pos
-    e_x, e_y = enemy_pos
-    if (e_x >= p_x and e_x < (p_x + player_size)) or (p_x >= e_x and p_x < (e_x + enemy_size)):
-        if (e_y >= p_y and e_y < (p_y + player_size)) or (p_y >= e_y and p_y < (e_y + enemy_size)):
-            return True
-    return False
+# define face
+face_rect = pygame.Rect(125, 150, 150, 200)
+face_surface = pygame.Surface((150, 200))
+face_surface.fill(WHITE)
 
-# Run the game loop
+# define eyes
+eye1_rect = pygame.Rect(150, 200, 50, 50)
+eye2_rect = pygame.Rect(200, 200, 50, 50)
+eye1_surface = pygame.Surface((50, 50))
+eye2_surface = pygame.Surface((50, 50))
+
+# main game loop
 running = True
 while running:
-    # Handle events
+    # event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                player_pos[0] -= player_size
-            elif event.key == pygame.K_RIGHT:
-                player_pos[0] += player_size
-
-    # Move the enemy down the screen
-    enemy_pos[1] += enemy_speed
-
-    # Check for collision
-    if detect_collision(player_pos, enemy_pos):
-        score += 1
-        enemy_pos = [random.randint(0, WINDOW_SIZE[0] - enemy_size), 0]
-
-    # Draw the screen
-    screen.fill((255, 255, 255))
-    pygame.draw.rect(screen, (0, 0, 255), (player_pos[0], player_pos[1], player_size, player_size))
-    pygame.draw.rect(screen, (255, 0, 0), (enemy_pos[0], enemy_pos[1], enemy_size, enemy_size))
-
-    # Draw the score
-    score_text = font.render("Score: " + str(score), True, (0, 0, 0))
-    screen.blit(score_text, (10, 10))
-
-    # Update the display and tick the clock
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            # check if hair was clicked
+            if hair_rect.collidepoint(pos):
+                selected_hair += 1
+                if selected_hair == len(hair_options):
+                    selected_hair = 0
+            # check if skin was clicked
+            elif face_rect.collidepoint(pos):
+                selected_skin += 1
+                if selected_skin == len(skin_options):
+                    selected_skin = 0
+            # check if eyes were clicked
+            elif eye1_rect.collidepoint(pos) or eye2_rect.collidepoint(pos):
+                selected_eye += 1
+                if selected_eye == len(eye_options):
+                    selected_eye = 0
+                    
+    # update hair
+    hair_surface.fill(hair_options[selected_hair])
+    
+    # update eyes
+    eye1_surface.fill(eye_options[selected_eye])
+    eye2_surface.fill(eye_options[selected_eye])
+    
+    # draw avatar
+    screen.fill(WHITE)
+    pygame.draw.rect(screen, hair_options[selected_hair], hair_rect)
+    pygame.draw.rect(screen, skin_options[selected_skin], face_rect)
+    screen.blit(eye1_surface, eye1_rect)
+    screen.blit(eye2_surface, eye2_rect)
+    
+    # update display
     pygame.display.update()
-    clock.tick(30)
 
-# Quit Pygame
+# quit pygame
 pygame.quit()
